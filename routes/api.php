@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\TransactionsController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,3 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->get('/authenticated', function (Request $request) {
     return true;
 });
+
+Route::get('/get-transactions', [TransactionsController::class, 'getTransactions']);

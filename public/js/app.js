@@ -3107,7 +3107,14 @@ var render = function render() {
       to: "/",
       exact: ""
     }
-  }, [_vm._v("\n                            Home\n                        ")])], 1)])])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n                            Home\n                        ")])], 1), _vm._v(" "), _c("li", {
+    staticClass: "nav-item"
+  }, [_c("router-link", {
+    staticClass: "nav-link",
+    attrs: {
+      to: "/transactions"
+    }
+  }, [_vm._v("\n                            Transactions\n                        ")])], 1)])])])]), _vm._v(" "), _c("div", {
     staticClass: "container-fluid"
   }, [_c("router-view")], 1)]);
 };
@@ -3298,6 +3305,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var routes = [{
+  path: "/transactions",
+  component: Transactions,
+  name: "Transactions"
+}, {
   path: "/",
   component: _components_Home__WEBPACK_IMPORTED_MODULE_1__["default"],
   name: "Home"

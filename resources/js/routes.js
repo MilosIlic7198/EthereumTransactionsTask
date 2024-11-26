@@ -1,7 +1,13 @@
 import NotFound from "./components/NotFound";
 import Home from "./components/Home";
+import Transactions from "./components/Transactions";
 
 const routes = [
+    {
+        path: "/transactions",
+        component: Transactions,
+        name: "Transactions",
+    },
     {
         path: "/",
         component: Home,
