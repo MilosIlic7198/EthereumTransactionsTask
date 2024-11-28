@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Services\EtherscanService;
+
 class Transaction extends Model
 {
     use HasFactory;
@@ -25,4 +27,15 @@ class Transaction extends Model
         'wallet_id',
         'time_stamp',
     ];
+
+    public function importFromEtherscan($address)
+    {
+        $eService = new EtherscanService();
+        $tknTransactions = $eService->getTransactions($address, 1, 10);
+        return [
+            'success' => true,
+            'message' => 'Transactions imported successfully.',
+            'payload' => $tknTransactions,
+        ];
+    }
 }

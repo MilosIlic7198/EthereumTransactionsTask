@@ -73,10 +73,28 @@
                                 <th>From</th>
                                 <th>To</th>
                                 <th>Time Stamp</th>
-                                <th>Created At</th>
-                                <th>Updated At</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <tr v-if="tknTransactions.length === 0">
+                                <td colspan="10" class="text-center">No Data Available</td>
+                            </tr>
+                            <tr v-else v-for="(transaction, index) in tknTransactions" :key="index">
+                                <td>
+                                    <button v-if="isSender(transaction.from)" class="btn btn-danger btn-sm">Out</button>
+                                    <button v-else class="btn btn-success btn-sm">In</button>
+                                </td>
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ transaction.blockNumber }}</td>
+                                <td>{{ transaction.tokenSymbol }}</td>
+                                <td>{{ formatTknValue(transaction.value, transaction.tokenDecimal) }}</td>
+                                <td>{{ formatEthUsed(transaction.gasUsed, transaction.gasPrice) }}</td>
+                                <td>{{ transaction.hash }}</td>
+                                <td>{{ transaction.from }}</td>
+                                <td>{{ transaction.to }}</td>
+                                <td>{{ formatTimeStamp(transaction.timeStamp) }}</td>
+                            </tr>
+                        </tbody>
                         <tfoot>
                             <tr>
                                 <th>$</th>
@@ -89,8 +107,6 @@
                                 <th>From</th>
                                 <th>To</th>
                                 <th>Time Stamp</th>
-                                <th>Created At</th>
-                                <th>Updated At</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -109,6 +125,7 @@ export default {
             address: "",
             blockNumber: 0,
             isTxLoading: false,
+            tknTransactions: [],
             copiedAddress: {},
             validationErrors: {
                 address: { error: false, message: null }
@@ -140,8 +157,10 @@ export default {
             this.isTxLoading = true;
             axios.get("/api/get-transactions", { params: { address: this.address } }).then((res) => {
                 console.log(res.data);
+                this.tknTransactions = res.data.payload;
             }).catch((err) => {
                 console.log(err);
+                his.tknTransactions = [];
             }).finally(() => {
                 this.isTxLoading = false
             });
@@ -161,21 +180,37 @@ export default {
             this.validationErrors.address.message = null;
             return this.validationErrors.address.error;
         },
-        copyToClipboard(address, index) {
-            navigator.clipboard.writeText(address)
-                .then(() => {
-                    this.$set(this.copiedAddress, index, true);
-                    setTimeout(() => {
-                        this.$delete(this.copiedAddress, index);
-                    }, 1000);
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
-                });
-        },
         isValidAddress() {
             const regex = /^0x[a-fA-F0-9]{40}$/;
             return regex.test(this.address);
+        },
+        isSender(fromAddress) {
+            return fromAddress.toLowerCase() === this.address.toLowerCase();
+        },
+        formatTknValue(value, decimals) {
+            return (value / Math.pow(10, decimals)).toFixed(6);
+        },
+        formatEthUsed(gasUsed, gasPrice) {
+            return (gasUsed * gasPrice / Math.pow(10, 18)).toFixed(6);
+        },
+        formatTimeStamp(unixTimestamp) {
+            const date = new Date(unixTimestamp * 1000);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        },
+        copyToClipboard(address, index) {
+            navigator.clipboard.writeText(address)
+            .then(() => {
+                this.$set(this.copiedAddress, index, true);
+                setTimeout(() => {
+                    this.$delete(this.copiedAddress, index);
+                }, 1000);
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
         },
     },
     beforeDestroy() {}
