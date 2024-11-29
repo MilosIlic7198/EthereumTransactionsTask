@@ -60,56 +60,58 @@
                     List of transactions
                 </div>
                 <div class="card-body">
-                    <table id="txTable" class="table table-dark table-striped-columns">
-                        <thead>
-                            <tr>
-                                <th>$</th>
-                                <th>ID</th>
-                                <th>Block Number</th>
-                                <th>Token Symbol</th>
-                                <th>Token Value</th>
-                                <th>ETH Used</th>
-                                <th>Transaction Hash</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Time Stamp</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-if="tknTransactions.length === 0">
-                                <td colspan="10" class="text-center">No Data Available</td>
-                            </tr>
-                            <tr v-else v-for="(transaction, index) in tknTransactions" :key="index">
-                                <td>
-                                    <button v-if="isSender(transaction.from)" class="btn btn-danger btn-sm">Out</button>
-                                    <button v-else class="btn btn-success btn-sm">In</button>
-                                </td>
-                                <td>{{ index + 1 }}</td>
-                                <td>{{ transaction.blockNumber }}</td>
-                                <td>{{ transaction.tokenSymbol }}</td>
-                                <td>{{ formatTknValue(transaction.value, transaction.tokenDecimal) }}</td>
-                                <td>{{ formatEthUsed(transaction.gasUsed, transaction.gasPrice) }}</td>
-                                <td>{{ transaction.hash }}</td>
-                                <td>{{ transaction.from }}</td>
-                                <td>{{ transaction.to }}</td>
-                                <td>{{ formatTimeStamp(transaction.timeStamp) }}</td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>$</th>
-                                <th>ID</th>
-                                <th>Block Number</th>
-                                <th>Token Symbol</th>
-                                <th>Token Value</th>
-                                <th>ETH Used</th>
-                                <th>Transaction Hash</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Time Stamp</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="txTable" class="table table-dark table-striped-columns">
+                            <thead>
+                                <tr>
+                                    <th>$</th>
+                                    <th>ID</th>
+                                    <th style="min-width: 75px;" >Block Number</th>
+                                    <th style="min-width: 75px;" >Token Symbol</th>
+                                    <th style="min-width: 75px;" >Token Value</th>
+                                    <th style="min-width: 75px;" >ETH Used</th>
+                                    <th style="min-width: 100px;" >Transaction Hash</th>
+                                    <th style="min-width: 100px;" >From</th>
+                                    <th style="min-width: 100px;" >To</th>
+                                    <th>Time Stamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="tknTransactions.length === 0">
+                                    <td colspan="10" class="text-center">No Data Available</td>
+                                </tr>
+                                <tr v-else v-for="(transaction, index) in tknTransactions" :key="index">
+                                    <td>
+                                        <button v-if="isSender(transaction.from)" class="btn btn-danger btn-sm">Out</button>
+                                        <button v-else class="btn btn-success btn-sm">In</button>
+                                    </td>
+                                    <td>{{ index + 1 }}</td>
+                                    <td class="text-break">{{ transaction.blockNumber }}</td>
+                                    <td class="text-break">{{ transaction.tokenSymbol }}</td>
+                                    <td class="text-break">{{ formatTknValue(transaction.value, transaction.tokenDecimal) }}</td>
+                                    <td class="text-break">{{ formatEthUsed(transaction.gasUsed, transaction.gasPrice) }}</td>
+                                    <td class="text-break">{{ transaction.hash }}</td>
+                                    <td class="text-break">{{ transaction.from }}</td>
+                                    <td class="text-break">{{ transaction.to }}</td>
+                                    <td class="text-nowrap">{{ formatTimeStamp(transaction.timeStamp) }}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>$</th>
+                                    <th>ID</th>
+                                    <th style="min-width: 75px;" >Block Number</th>
+                                    <th style="min-width: 75px;" >Token Symbol</th>
+                                    <th style="min-width: 75px;" >Token Value</th>
+                                    <th style="min-width: 75px;" >ETH Used</th>
+                                    <th style="min-width: 100px;" >Transaction Hash</th>
+                                    <th style="min-width: 100px;" >From</th>
+                                    <th style="min-width: 100px;" >To</th>
+                                    <th>Time Stamp</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
