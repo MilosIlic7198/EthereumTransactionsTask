@@ -28,13 +28,13 @@ class Transaction extends Model
         'time_stamp',
     ];
 
-    public function importFromEtherscan($address)
+    public function importFromEtherscan($address, $page, $pageSize)
     {
         $eService = new EtherscanService();
-        $tknTransactions = $eService->getTransactions($address, 1, 10);
+        $tknTransactions = $eService->getTransactions($address, $page, $pageSize);
         return [
             'success' => true,
-            'message' => 'Transactions imported successfully.',
+            'message' => 'Transactions fetched successfully.',
             'payload' => $tknTransactions,
         ];
     }

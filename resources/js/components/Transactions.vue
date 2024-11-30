@@ -65,7 +65,6 @@
                             <thead>
                                 <tr>
                                     <th>$</th>
-                                    <th>ID</th>
                                     <th style="min-width: 75px;" >Block Number</th>
                                     <th style="min-width: 75px;" >Token Symbol</th>
                                     <th style="min-width: 75px;" >Token Value</th>
@@ -78,14 +77,13 @@
                             </thead>
                             <tbody>
                                 <tr v-if="tknTransactions.length === 0">
-                                    <td colspan="10" class="text-center">No Data Available</td>
+                                    <td colspan="9" class="text-center">No Data Available!</td>
                                 </tr>
                                 <tr v-else v-for="(transaction, index) in tknTransactions" :key="index">
                                     <td>
                                         <button v-if="isSender(transaction.from)" class="btn btn-danger btn-sm">Out</button>
                                         <button v-else class="btn btn-success btn-sm">In</button>
                                     </td>
-                                    <td>{{ index + 1 }}</td>
                                     <td class="text-break">{{ transaction.blockNumber }}</td>
                                     <td class="text-break">{{ transaction.tokenSymbol }}</td>
                                     <td class="text-break">{{ formatTknValue(transaction.value, transaction.tokenDecimal) }}</td>
@@ -99,7 +97,6 @@
                             <tfoot>
                                 <tr>
                                     <th>$</th>
-                                    <th>ID</th>
                                     <th style="min-width: 75px;" >Block Number</th>
                                     <th style="min-width: 75px;" >Token Symbol</th>
                                     <th style="min-width: 75px;" >Token Value</th>
@@ -111,6 +108,12 @@
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+                    <div class="d-flex" v-if="tknTransactions.length != 0">
+                        <span v-if="!isPageLoading" class="flex-grow-1">Page {{ currentPage }} with {{ pageSize }} items per page.</span>
+                        <button v-if="!isPageLoading" class="btn btn-dark me-1" :disabled="currentPage === 1" @click="prevPage">Previous</button>
+                        <button v-if="!isPageLoading" class="btn btn-dark" :disabled="!pageAvailable" @click="nextPage">Next</button>
+                        <span v-if="isPageLoading" class="spinner-border spinner-border-sm ms-auto" role="loadPage" aria-hidden="true"></span>
                     </div>
                 </div>
             </div>
@@ -127,7 +130,11 @@ export default {
             address: "",
             blockNumber: 0,
             isTxLoading: false,
+            isPageLoading: false,
             tknTransactions: [],
+            currentPage: 1,
+            pageSize: 10,
+            pageAvailable: false,
             copiedAddress: {},
             validationErrors: {
                 address: { error: false, message: null }
@@ -157,14 +164,43 @@ export default {
                 return;
             }
             this.isTxLoading = true;
-            axios.get("/api/get-transactions", { params: { address: this.address } }).then((res) => {
+            this.getTransactions()
+            .then((res) => {
                 console.log(res.data);
                 this.tknTransactions = res.data.payload;
+                //Check if more pages are available.
+                this.isPageAvailable();
             }).catch((err) => {
                 console.log(err);
-                his.tknTransactions = [];
+                this.tknTransactions = [];
+                this.pageAvailable = false;
             }).finally(() => {
                 this.isTxLoading = false
+            });
+        },
+        showTransactionsPage() {
+            this.isPageLoading = true;
+            this.getTransactions()
+            .then((res) => {
+                console.log(res.data);
+                this.tknTransactions = res.data.payload;
+                //Check if more pages are available.
+                this.isPageAvailable();
+            }).catch((err) => {
+                console.log(err);
+                this.tknTransactions = [];
+                this.pageAvailable = false;
+            }).finally(() => {
+                this.isPageLoading = false
+            });
+        },
+        getTransactions() {
+            return axios.get("/api/get-transactions", {
+                params: {
+                    address: this.address,
+                    page: this.currentPage,
+                    pageSize: this.pageSize
+                }
             });
         },
         checkAddress() {
@@ -201,6 +237,21 @@ export default {
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
+        },
+        isPageAvailable() {
+            this.pageAvailable = this.tknTransactions.length === this.pageSize;
+        },
+        nextPage() {
+            if (this.pageAvailable) {
+                this.currentPage += 1;
+                this.showTransactionsPage();
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage -= 1;
+                this.showTransactionsPage();
+            }
         },
         copyToClipboard(address, index) {
             navigator.clipboard.writeText(address)
